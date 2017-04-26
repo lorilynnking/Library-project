@@ -9,81 +9,98 @@ function newBook(title, author, pgCount, publishDt, other) {
 var library = function(){};
 
 library.prototype.myBookArray = [];
-var logArray = [];   // NOTE:  set up a log of events
+
+library.prototype.logArray = [];   // NOTE:  set up a log of events
+
+//******************************************** Log messages to array
+library.prototype.logMessage = function(message){
+  console.log(message);
+  // var logArrayLen = this.logArray.length;
+  this.logArray[this.logArray.length] = message;
+  return;
+};
+
+//******************************************** Log messages to array
+library.prototype.printLog = function(){
+  var logArrayLen = this.logArray.length;
+  for (var i = 0; i < logArrayLen; i++) {
+    console.log(i,logArray[i]);
+  };
+};
 
 //******************************************** set up method add books to array
 library.prototype.addBook = function(myBook){
-  // check syntax of input
+  // First, check syntax of input
   var isNewBook = true;
   var bookValid = validateBookInfo(myBook);
   // increment through existing books and check for duplicates
   if (bookValid) {
-    var bookArrayLen = gLibrary.myBookArray.length;
-    // console.log("bookArrayLen: ", bookArrayLen);
-    if (bookArrayLen > 0) {    // perform search
-      // console.log("bookArrayLen > 0: ", bookArrayLen);
+    var bookArrayLen = this.myBookArray.length;
+    if (bookArrayLen > 0) {    // we have existing books; perform search
       for(var i = 0; (i < bookArrayLen && isNewBook); i++){
-        if ((gLibrary.myBookArray[i].title == myBook.title)
-        && (gLibrary.myBookArray[i].author == myBook.author)) {
+        if ((this.myBookArray[i].title == myBook.title)
+        && (this.myBookArray[i].author == myBook.author)) {
           isNewBook = false;
         };
       };
     };
   }
-  else{
+  else {   // something is wrong with the book
     isNewBook = false;
   };
-  // if book isn't already there, insert data into new element
-  if (isNewBook) {
-    gLibrary.myBookArray.push(myBook);
-          // console.log("add new:", myBook.title+" ("+myBook.author+")");   // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+  if (isNewBook) {          // if book isn't already there, insert data into new element
+    this.myBookArray.push(myBook);
+    this.logMessage(eval('"addBook: "+ myBook.title+" ("+myBook.author+")"'));
   }
-  else {
-        // NOTE: Book with same title and author can only appear once in the array??
-          console.log("Book already exists: ", myBook.title+" ("+myBook.author+")");    // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+  else {                    // already have a book with same title and author
+    this.logMessage(eval('"addBook: ***ERROR*** Book already exists: "+myBook.title+" ("+myBook.author+")"'));
   };
   // console.log ("new book added? ",isNewBook,myBook);
   return isNewBook;
 };
 
-//******************************************** Validate inputs prior to adding to array
+//******************************************** Validate inputs prior to adding to array   NOTE: might want to change this to not make it nested????
 validateBookInfo = function(myBook){
   // NOTE:  Use form validation when working with inputs from presentation layer  https://www.w3schools.com/js/js_validation_api.asp
   if ((typeof(myBook.title)=="string") | (typeof(myBook.title)=="number")) {
-            // console.log("title ok")
     if (typeof(myBook.author) == "string") {
-            // console.log("author ok")
       if (typeof(myBook.pgCount) == "number") {
-            // console.log("pgCount ok")
         if (typeof(myBook.publishDt) == "number") {   // NOTE:  fix this for better date validation
-            // console.log("publishDt ok")
             return true;
             // NOTE: no validation on any other stuff that might be passed in
-        } else {console.log("Incorrect datatype: publishDt: "+ myBook.publishDt); }
-      } else {console.log("Incorrect datatype: pgCount: "+ myBook.pgCount); }
-    } else {console.log("Incorrect datatype: author: "+ myBook.author); }
-  } else {console.log("Incorrect datatype: title: "+ myBook.title); }
+        }
+        else { this.logMessage(eval('"validateBookInfo: ***ERROR*** Incorrect datatype: publishDt: "+ myBook.publishDt'));
+        };
+      }
+      else { this.logMessage(eval('"validateBookInfo: ***ERROR*** Incorrect datatype: pgCount: "+ myBook.pgCount'));
+      };
+    }
+    else { this.logMessage(eval('"validateBookInfo: ***ERROR*** Incorrect datatype: author: "+ myBook.author'));
+    };
+  }
+  else { this.logMessage(eval('"validateBookInfo: ***ERROR*** Incorrect datatype: title: "+ myBook.title'));
+  };
   return false;
 };
 
 //******************************************** Remove book by title
 library.prototype.removeBookByTitle = function(myTitle){
   var removalCount = 0;
-  var bookMaxIndex = gLibrary.myBookArray.length-1;
+  var bookMaxIndex = this.myBookArray.length-1;
   var booksRemoved = false;
   for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
-    if (myTitle ==  gLibrary.myBookArray[i].title) {
-      // console.log("removing book ",i,gLibrary.myBookArray[i].title);
-      gLibrary.myBookArray.splice(i, 1);  // take it out and shift the other elements
+    if (myTitle ==  this.myBookArray[i].title) {
+      // console.log("removing book ",i,this.myBookArray[i].title);
+      this.myBookArray.splice(i, 1);  // take it out and shift the other elements
       removalCount++;
       booksRemoved = true;
     };
   };
   if (booksRemoved)  {
-    console.log(removalCount +"  Books removed: "+myTitle);          // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+      this.logMessage(eval('"removeBookByTitle: "+removalCount +"  Books removed: "+myTitle'));
   }
   else {
-    console.log("Book not found: "+myTitle);                         // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+      this.logMessage(eval('"removeBookByTitle: ***ERROR*** Book not found: "+myTitle'));
   };
   // console.log(booksRemoved);
   return booksRemoved;
@@ -92,50 +109,62 @@ library.prototype.removeBookByTitle = function(myTitle){
 //******************************************** Remove book by author
 library.prototype.removeBookByAuthor = function(myAuthor){
   var removalCount = 0;
-  var bookMaxIndex = gLibrary.myBookArray.length-1;
+  var bookMaxIndex = this.myBookArray.length-1;
   var booksRemoved = false;
   for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
-    if (myAuthor ==  gLibrary.myBookArray[i].author) {
-      // console.log("removing book ",i,gLibrary.myBookArray[i].author);
-      gLibrary.myBookArray.splice(i, 1);  // take it out and shift the other elements
+    if (myAuthor ==  this.myBookArray[i].author) {
+      // console.log("removing book ",i,this.myBookArray[i].author);
+      this.myBookArray.splice(i, 1);  // take it out and shift the other elements
       removalCount++;
       booksRemoved = true;
     };
   };
   if (booksRemoved)  {
-    console.log(removalCount +" Books by "+myAuthor+" removed");          // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+      this.logMessage(eval('"removeBookByAuthor: "+removalCount +" Books by "+myAuthor+" removed"'));
   }
   else {
-    console.log("Books by "+myAuthor+" not found");                      // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+      this.logMessage(eval('"removeBookByAuthor: ***ERROR*** Books by "+myAuthor+" not found"'));
   };
-  console.log(booksRemoved);
   return booksRemoved;
 };
 
-//********************************************  Get random book object from your books array
-library.prototype.getRandomBook = function(){};  //()
-    // math.random, math.float?   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+//********************************************  Get random book
+library.prototype.getRandomBook = function(){
+  var bookArrayLen = this.myBookArray.length;    // get size of current array
+  if (bookArrayLen > 0) {
 
-    //******************************************** get list of books by title
+    var randomIndex = Math.round(Math.random()*bookArrayLen);
+      this.logMessage(eval('"GetRandomBook: "+randomIndex, this.myBookArray[randomIndex].title'));
+    return this.myBookArray[randomIndex];
+  }
+  else {
+      this.logMessage(eval('"GetRandomBook: ***ERROR*** No books!"'));
+    return null;
+  };
+};
+
+//******************************************** get list of books by title
 library.prototype.getBookByTitle = function(queryString){
   var titleArray = [];
   var resultsCount = 0;
   var pos = 0;
   // console.log("level 1: looking for ",queryString);
-  for (var i=0; i<gLibrary.myBookArray.length; i++) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
-    pos = gLibrary.myBookArray[i].title.indexOf(queryString);
+  for (var i=0; i<this.myBookArray.length; i++) {
+    pos = this.myBookArray[i].title.indexOf(queryString);
     // console.log("  level 2: i = "+i+", pos = "+pos+" pos>0? "+(pos>=0));
     if (pos >= 0) {
       // console.log("    level 3: i = "+i+", match, add to results array");
-      titleArray[resultsCount] = gLibrary.myBookArray[i];
+      titleArray[resultsCount] = this.myBookArray[i];
       resultsCount++;
     };
   };
   // console.log(resultsCount,titleArray);
-  // if (resultsCount>0) { console.log (resultsCount+" matches found for "+queryString);      // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
-  // }
-  // else                { console.log("No matches found for "+queryString);          // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
-  // };
+  if (resultsCount>0) {
+    this.logMessage(eval('"getBookByTitle: "+resultsCount+" matches found for "+queryString'));
+  }
+  else {
+    this.logMessage(eval('"getBookByTitle: ***ERROR*** No matches found for "+queryString'));
+  };
   return titleArray;
 };
 
@@ -145,36 +174,71 @@ library.prototype.getBooksByAuthor = function(queryString){
   var resultsCount = 0;
   var pos = 0;
   // console.log("level 1: looking for ",queryString);
-  for (var i=0; i<gLibrary.myBookArray.length; i++) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
-  pos = gLibrary.myBookArray[i].author.indexOf(queryString);
+  for (var i=0; i<this.myBookArray.length; i++) {
+      pos = this.myBookArray[i].author.indexOf(queryString);
     // console.log("  level 2: i = "+i+", pos = "+pos+" pos>0? "+(pos>=0));
     if (pos >= 0) {
       // console.log("    level 3: i = "+i+", match, add to results array");
-      authorArray[resultsCount] = gLibrary.myBookArray[i];
+      authorArray[resultsCount] = this.myBookArray[i];
       resultsCount++;
     };
   };
-  console.log(resultsCount,authorArray);
-  if (resultsCount>0) { console.log (resultsCount+" matches found for "+queryString);      // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+  // console.log(resultsCount,authorArray);
+  if (resultsCount>0) {
+    this.logMessage(eval('"getBooksByAuthor: "+resultsCount+" matches found for "+queryString'));
   }
-  else                { console.log("No matches found for "+queryString);          // NOTE:  THIS IS A STATUS TO BE REPORTED NOTE:
+  else {
+    this.logMessage(eval('"getBooksByAuthor: ***ERROR*** No matches found for "+queryString'));
   };
   return authorArray;
 };
 
-
-
-
-
-
 //******************************************** Add an array of books
-library.prototype.addBooks = function(){};  //(books)
+library.prototype.addBooks = function(inputBookArray){
+  var inputArrayLen = inputBookArray.length;
+  var addCount = 0;
+  for (var i = 0; (i < inputArrayLen); i++){
+    if (this.addBook(inputBookArray[i])) {
+      addCount++;
+    };
+  };
+  this.logMessage(eval('"addBooks: "+addCount+" books added"'));
 
-//******************************************** get list authors author
-library.prototype.getAuthors = function(){};  //()
+  return addCount;
+};
+
+//******************************************** get list of authors
+library.prototype.getAuthors = function(){
+  var authorArray = [];
+  var bookArrayLen = this.myBookArray.length;
+  var authorArraySize = 0;
+  var lookForAuthor = -1;
+  for (var i = 0; (i < bookArrayLen); i++){
+    lookForAuthor = authorArray.indexOf(this.myBookArray[i].author);
+    if (lookForAuthor==-1) {
+        authorArray[authorArraySize] = this.myBookArray[i].author;
+        authorArraySize++;
+    };
+  };
+  this.logMessage(eval('"getAuthors: "+authorArraySize+" distinct authors: ", authorArray'));
+  return authorArray;
+};
 
 //******************************************** Get random author
-library.prototype.getRandomAuthorName = function(){};  //()
+library.prototype.getRandomAuthorName = function(){
+  var authArray = this.getAuthors();
+  var authArrayLen = authArray.length;    // get size of current array
+  if (authArrayLen > 0) {
+    var randomIndex = Math.round(Math.random()*(authArrayLen-1));
+    this.logMessage(eval('"getRandomAuthorName: "+randomIndex+" "+authArray[randomIndex]'));
+    return authArray[randomIndex];
+  }
+  else {
+    this.logMessage(eval('"GetRandomBook: ***ERROR*** No authors!"'));
+    return null;
+  };
+
+};
 
 //  put instances at bottom per Eric
 var gLibrary = new library();   // global library
@@ -186,13 +250,28 @@ var book5 = new newBook( "The Masterharper of Pern","Anne McCaffrey", 212, 1998)
 var book6 = new newBook( "The Bourne Identity","Different Author", 256, 1981);   // test duplicate book
 var book7 = new newBook( "The Bourne Identity","Robert Ludlum", 256, 1981);   // test duplicate book
 
-gLibrary.addBook(book1);
-gLibrary.addBook(book2);
-gLibrary.addBook(book3);
-gLibrary.addBook(book4);
-gLibrary.addBook(book5);
-gLibrary.addBook(book6);
-gLibrary.addBook(book7);
+var bookArray = [];
+bookArray[0] = book1;
+bookArray[1] = book2;
+bookArray[2] = book3;
+bookArray[3] = book4;
+bookArray[4] = book5;
+bookArray[5] = book6;
+bookArray[6] = book7;
+
+// gLibrary.addBook(book1);
+// gLibrary.addBook(book2);
+// gLibrary.addBook(book3);
+// gLibrary.addBook(book4);
+// gLibrary.addBook(book5);
+// gLibrary.addBook(book6);
+// gLibrary.addBook(book7);  //  this one should fail
+
+// var result = gLibrary.getRandomBook();
+// console.log(result);
+
+// var result = gLibrary.addBooks(bookArray);
+// console.log(result);
 
 var remTitle1 = "The Bourne Identity";
 var remTitle2 = "1984";  // this one should return "no book founc"
@@ -203,6 +282,7 @@ var remAuthor1 = "Anne McCaffrey";
 var remAuthor2 = "George Orwell";  // this one should return "no book founc"
 // gLibrary.removeBookByAuthor(remAuthor1);
 // gLibrary.removeBookByAuthor(remAuthor2);
+
 
 var findBook1 = "Seven";    // beginning string
 var findBook2 = "Pern";    // ending string
@@ -226,6 +306,11 @@ var findAuthor5 = "Orwell";    // no match
 // gLibrary.getBooksByAuthor(findAuthor4);
 // gLibrary.getBooksByAuthor(findAuthor5);
 
+
+// gLibrary.getAuthors();
+
+// var result = gLibrary.getRandomAuthorName();
+// console.log(result);
 
 //88888888888888888888888888888  test block for validating fields  on addBook  8888888888888888888888888888888888888
 // var bookInv1 = new newBook( true,true,true,true); // test title
