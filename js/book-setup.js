@@ -1,5 +1,6 @@
 //// use glibrary.logArray in console to get all messages printed to log
 
+
 function newBook(title, author, pgCount, publishDt, other) {
   this.title = title;
   this.author = author;
@@ -20,17 +21,8 @@ library.prototype.reportLog = false;  // can turn console log events from logMes
 library.prototype.logMessage = function(message){
   if (this.reportLog == true) { console.log(message);
   };
-    // var logArrayLen = this.logArray.length;
   this.logArray[this.logArray.length] = message;
   return;
-};
-
-//******************************************** Log messages to array
-library.prototype.printLog = function(){
-  var logArrayLen = this.logArray.length;
-  for (var i = 0; i < logArrayLen; i++) {
-    console.log(i,logArray[i]);
-  };
 };
 
 //******************************************** Add book to array
@@ -38,25 +30,30 @@ library.prototype.addBook = function(myBook){
   var isNewBook = true;
   // increment through existing books and check for duplicates
   var bookArrayLen = this.myBookArray.length;
-  if (bookArrayLen > 0) {    // we have existing books; perform search
-    for(var i = 0; (i < bookArrayLen && isNewBook); i++){
-      if ((this.myBookArray[i].title == myBook.title)
-      && (this.myBookArray[i].author == myBook.author)) {   // not a new book
-        this.logMessage(eval('"addBook: ***ERROR*** Book already exists: "+myBook.title+" ("+myBook.author+")"'));
+  if (typeof(myBook) != "undefined") {
+    if (bookArrayLen > 0) {    // we have existing books; perform search
+      for(var i = 0; (i < bookArrayLen && isNewBook); i++){
+        if ((this.myBookArray[i].title == myBook.title)
+        && (this.myBookArray[i].author == myBook.author)) {   // not a new book
+          this.logMessage(eval('"addBook: ***ERROR*** Book already exists: "+myBook.title+" ("+myBook.author+")"'));
+          isNewBook = false;
+        };
+      };
+    };
+    if (isNewBook) {
+      if (this.validBookInfo(myBook)) {
+        this.myBookArray.push(myBook);
+        this.logMessage(eval('"addBook: Book added!  "+ myBook.title+" ("+myBook.author+")"'));      //  add to array
+      }
+      else {
+        this.logMessage(eval('"addBook: ***ERROR*** Book not valid: "+ myBook.title+" ("+myBook.author+")"'));
         isNewBook = false;
       };
     };
-  };
-  if (isNewBook) {
-      // var bookValid = this.validBookInfo(myBook);
-    if (this.validBookInfo(myBook)) {
-      this.myBookArray.push(myBook);
-      this.logMessage(eval('"addBook: Book added!  "+ myBook.title+" ("+myBook.author+")"'));      //  add to array
-    }
-    else {
-      this.logMessage(eval('"addBook: ***ERROR*** Book not valid: "+ myBook.title+" ("+myBook.author+")"'));
-      isNewBook = false;
-    };
+  }
+  else {
+    this.logMessage(eval('"addBook: ***WARNING*** No book specified"'));
+    isNewBook = false;
   };
   return isNewBook;
 };
@@ -96,7 +93,8 @@ library.prototype.validBookInfo = function(myBook){
     };
   };
     //--------------------------------------------------
-  if (typeof(myBook.publishDt) != "number" && typeof(myBook.publishDt) != "string") {  // NOTE:  fix this for test case book14 (returns Invalid Date)     ***** FIX THIS
+  if (typeof(myBook.publishDt) != "number" && typeof(myBook.publishDt) != "string"
+        && typeof(myBook.publishDt) != "object") {
     goodInput = false;
     this.logMessage(eval('"validBookInfo: ***ERROR*** Incorrect datatype: Publish Date = "+ myBook.publishDt'));
   }
@@ -119,7 +117,6 @@ library.prototype.validBookInfo = function(myBook){
         };
     };
   };
-  // };
   // NOTE: no validation on any other stuff that might be passed in
   return goodInput;
 };
@@ -129,18 +126,23 @@ library.prototype.removeBookByTitle = function(myTitle){
   var removalCount = 0;
   var bookMaxIndex = this.myBookArray.length-1;
   var booksRemoved = false;
-  for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
-    if (myTitle.toLowerCase() == this.myBookArray[i].title.toLowerCase()) {
-      this.myBookArray.splice(i, 1);  // take it out and shift the other elements
-      removalCount++;
-      booksRemoved = true;
+  if (typeof(myTitle) != "undefined" && myTitle.length >> 0) {
+    for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
+      if (myTitle.toLowerCase() == this.myBookArray[i].title.toLowerCase()) {
+        this.myBookArray.splice(i, 1);  // take it out and shift the other elements
+        removalCount++;
+        booksRemoved = true;
+      };
     };
-  };
-  if (booksRemoved)  {
+    if (booksRemoved)  {
       this.logMessage(eval('"removeBookByTitle: "+removalCount +"  Books removed: "+myTitle'));
+    }
+    else {
+      this.logMessage(eval('"removeBookByTitle: ***WARNING*** Book not found: "+myTitle'));
+    };
   }
   else {
-      this.logMessage(eval('"removeBookByTitle: ***WARNING*** Book not found: "+myTitle'));
+    this.logMessage(eval('"removeBookByAuthor: ***WARNING*** No book specified"'));
   };
   return booksRemoved;
 };
@@ -150,18 +152,23 @@ library.prototype.removeBookByAuthor = function(myAuthor){
   var removalCount = 0;
   var bookMaxIndex = this.myBookArray.length-1;
   var booksRemoved = false;
-  for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
-    if (myAuthor.toLowerCase() == this.myBookArray[i].author.toLowerCase()) {
-      this.myBookArray.splice(i, 1);  // take it out and shift the other elements
-      removalCount++;
-      booksRemoved = true;
+  if (typeof(myAuthor) != "undefined" && myAuthor.length >> 0) {
+    for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
+      if (myAuthor.toLowerCase() == this.myBookArray[i].author.toLowerCase()) {
+        this.myBookArray.splice(i, 1);  // take it out and shift the other elements
+        removalCount++;
+        booksRemoved = true;
+      };
     };
-  };
-  if (booksRemoved)  {
-      this.logMessage(eval('"removeBookByAuthor: "+removalCount +" Books by "+myAuthor+" removed"'));
+    if (booksRemoved)  {
+        this.logMessage(eval('"removeBookByAuthor: "+removalCount +" Books by "+myAuthor+" removed"'));
+    }
+    else {
+        this.logMessage(eval('"removeBookByAuthor: ***WARNING*** Books by "+myAuthor+" not found"'));
+    };
   }
   else {
-      this.logMessage(eval('"removeBookByAuthor: ***WARNING*** Books by "+myAuthor+" not found"'));
+  this.logMessage(eval('"removeBookByAuthor: ***WARNING*** No author specified"'));
   };
   return booksRemoved;
 };
@@ -224,15 +231,19 @@ library.prototype.getBooksByAuthor = function(queryString){
 
 //******************************************** Add an array of books
 library.prototype.addBooks = function(inputBookArray){
-  var inputArrayLen = inputBookArray.length;
   var addCount = 0;
-  for (var i = 0; (i < inputArrayLen); i++){
-    if (this.addBook(inputBookArray[i])) {
-      addCount++;
+  if (typeof(inputBookArray) != "undefined" && inputBookArray.length >> 0) {
+    var inputArrayLen = inputBookArray.length;
+    for (var i = 0; (i < inputArrayLen); i++){
+      if (this.addBook(inputBookArray[i])) {
+        addCount++;
+      };
     };
+    this.logMessage(eval('"addBooks: "+addCount+" books added"'));
+  }
+  else {
+    this.logMessage(eval('"addBooks: ***WARNING*** No book array specified"'));
   };
-  this.logMessage(eval('"addBooks: "+addCount+" books added"'));
-
   return addCount;
 };
 
@@ -268,20 +279,29 @@ library.prototype.getRandomAuthorName = function(){
     this.logMessage(eval('"GetRandomBook: ***WARNING*** No authors!"'));
     return null;
   };
-
 };
 
 
 //  put instances at bottom per Eric
 var gLibrary = new library();   // global library
 
-
 //******************************************** TEST cases
 
-var book1 = new newBook( "The White Dragon","Anne McCaffrey", 365, 1978, "5 stars", "Fantasy");
+
+
+
+
+
+
+
+
+
+
+
+var book1 = new newBook( "The White Dragon","Anne McCaffrey", 365, 1978, "Loaned to Teresa 6/15/2016");
 var book2 = new newBook( "The Bourne Identity","Robert Ludlum", 256, 1981);
-var book3 = new newBook( "The Lincoln Lawyer","Michael Connolly", 315, 2005);
-var book4 = new newBook( "Seven Databases in Seven Weeks","Eric Redmond and Jim R. Wilson", 212, 2013);
+var book3 = new newBook( "The Lincoln Lawyer","Michael Connolly", 315, 2005, "5 stars!");
+var book4 = new newBook( "Seven Databases in Seven Weeks","Eric Redmond and Jim R. Wilson", 212, 2013, "Regis MSCD664");
 var book5 = new newBook( "The Masterharper of Pern","Anne McCaffrey", 212, 1998);
 var book6 = new newBook( "The Bourne Identity","Different Author", 256, 1981);   // test duplicate book
 var book7 = new newBook( "The Bourne Identity","Robert Ludlum", 256, 1981);   // test duplicate book
@@ -421,6 +441,7 @@ var book13 = new newBook("test title13","test author", "555", "5-1-1979");
 var book14 = new newBook("test title14","test author", "nnn", "nnn");
 var book15 = new newBook("test title15","test author", "nnn", 1979);
 var book16 = new newBook("test title16","test author", 555, 197);
+var book17 = new newBook("test title17","test author", 555, "Tue May 01 1979 00:00:00 GMT-0600 (Mountain Daylight Time)");
 // gLibrary.addBook(book10);
 // gLibrary.addBook(book11);
 // gLibrary.addBook(book12);
@@ -435,3 +456,11 @@ var book16 = new newBook("test title16","test author", 555, 197);
 // var bookInv9 = new newBook( The White Dragon, Anne McCaffrey, 365, 1978);  // test  args not in quotes
 // gLibrary.addBook(bookInv9);
 //
+
+//******************************************** display message array
+library.prototype.printLog = function(){
+  var logArrayLen = this.logArray.length;
+  for (var i = 0; i < logArrayLen; i++) {
+    console.log(i,logArray[i]);
+  };
+};
