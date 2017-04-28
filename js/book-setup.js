@@ -281,6 +281,45 @@ library.prototype.getRandomAuthorName = function(){
   };
 };
 
+//******************************************** Search for stuff in book array
+library.prototype.getBookInfo = function(queryString){
+  var searchArray = [];
+  var resultsCount = 0;
+  var pos = 0;
+  var searchString = "";
+  if (typeof(queryString) != "undefined" && queryString.length >> 0) {
+    for (var i=0; i<this.myBookArray.length; i++) {
+      searchString = this.myBookArray[i].title.concat(
+        this.myBookArray[i].author,
+        this.myBookArray[i].pgCount,
+        this.myBookArray[i].publishDt,
+        this.myBookArray[i].other
+      );
+      pos = searchString.toLowerCase().indexOf(queryString.toLowerCase());
+      if (pos >= 0) {
+        searchArray[resultsCount] = this.myBookArray[i];
+        resultsCount++;
+      };
+    };
+    if (resultsCount>0) {
+      this.logMessage(eval('"getBookInfo: "+resultsCount+" matches found for "+queryString'));
+    }
+    else {
+      this.logMessage(eval('"getBookInfo: ***ERROR*** No matches found for "+queryString'));
+    };
+  }
+  else {
+  this.logMessage(eval('"getBookInfo: ***WARNING*** search info specified"'));
+  };
+  return searchArray;
+};
+
+
+
+
+
+
+
 
 //  put instances at bottom per Eric
 var gLibrary = new library();   // global library
@@ -314,6 +353,11 @@ tempBookArray[3] = book4;
 tempBookArray[4] = book5;
 tempBookArray[5] = book6;
 tempBookArray[6] = book7;
+
+
+var book8 = new newBook( "Teresa's Guide","Robert Ludlum", 256, 1981);
+var book9 = new newBook( "My Guide","Teresa Adams Creech", 256, 1981);
+
 
 
 //******************************************** Add book to array
