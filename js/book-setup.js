@@ -281,6 +281,7 @@ library.prototype.getRandomAuthorName = function(){
   };
 };
 
+//**************** BONUS CONTENT ********************************************
 //******************************************** Search for stuff in book array
 library.prototype.getBookInfo = function(queryString){
   var searchArray = [];
@@ -314,11 +315,51 @@ library.prototype.getBookInfo = function(queryString){
   return searchArray;
 };
 
+//******************************************** Store current myBookArray content in localStorage
+library.prototype.libStore = function() {
+  this.logMessage(eval('"libStore:  Checking for local storage support: typeof(Storage)="+typeof(Storage)'));
+  if(typeof(Storage) !== "undefined") {
+    localStorage.storedArray = JSON.stringify(this.myBookArray);
+    this.logMessage(eval('"libStore:  array stored."'));
+  }
+  else {
+    this.logMessage(eval('"libStore:  Sorry, your browser does not support web storage..."'));
+  };
+  return;
+};
+
+//******************************************** Retrieve previously stored myBookArray content from localStorage
+library.prototype.libGet = function() {
+  if(typeof(Storage) !== "undefined") {
+    if (typeof(localStorage.storedArray) !== "undefined") {
+      this.myBookArray = JSON.parse(localStorage.storedArray);
+      this.logMessage(eval('"libGet:  array retrieved."'));
+    }
+    else {
+      this.logMessage(eval('"libGet:  array was not preveiously stored; therefore current contents were not replaced"'));
+    };
+  }
+  else {
+    // console.log("Sorry, your browser does not support web storage...");
+        this.logMessage(eval('"libGet:  Sorry, your browser does not support web storage..."'));
+  };
+  return;
+};
+
+//******************************************** Clear out localStorage
+library.prototype.clearStorage = function() {
+  if (typeof(localStorage.storedArray) !== "undefined") {
+    localStorage.removeItem("storedArray");
+    this.logMessage(eval('"clearStorage:  Storage cleared."'));
+  }
+  else {
+    this.logMessage(eval('"clearStorage:  array was not preveiously stored"'));
+  };
+  return;
+};
 
 
-
-
-
+//******************************************** END ************************
 
 
 //  put instances at bottom per Eric
