@@ -1,0 +1,188 @@
+/*! mystyle.css */
+
+/* ==========================================================================
+HTML5 display definitions
+========================================================================== */
+
+
+
+html {
+  /*background-color:  lightgrey;*/
+    /*background-color:  #99ccff;*/
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  font-family: Verdana, Arial, sans-serif;
+}
+
+body {
+  padding: 25px;
+  }
+
+#lowerright {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+
+
+/*** control list for use in header  */
+
+#headerrnav ul
+{
+  margin: 5;
+  padding: 10;
+  list-style-type: none;
+  background-color: #99ccff;
+}
+
+#headerrnav ul li { display: inline; padding: 10px 5px;}
+
+#navcontainer ul li.right-element { float: right;}
+
+/* for bottom-alignment within an element */
+.parent
+{
+  position:relative; padding-bottom:30px;
+  p {position:absolute; bottom:0; left:0;}
+}
+
+/*** control list for use in navigation bar  */
+
+/*#jtlib ul*/
+/*{*/
+  /*margin: 5;*/
+  /*padding: 0;*/
+  /*list-style-type: none;*/
+  /*overflow: hidden;*/
+  /*background-color: darkgrey;*/
+/*}*/
+
+ul
+{
+list-style-type: none;
+padding: 0;
+margin-left: 1em;
+}
+
+/*#navcontainer ul*/
+/*{*/
+  /*margin: 5;*/
+  /*padding: 0;*/
+  /*list-style-type: none;*/
+  /*overflow: hidden;*/
+  /*background-color: darkgrey;*/
+/*}*/
+
+/*#navcontainer ul li {*/
+  /*display: inline;*/
+  /*padding: 10px 5px;*/
+  /*float: left;*/
+  /*border-right:2px solid #99ccff;*/
+/*}*/
+
+/*li:last-child {*/
+    /*border-right: none;*/
+/*}*/
+
+a:link {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: underline;
+  background-color: purple;
+}
+
+a:visited {
+  text-decoration: none;
+}
+/*     a:hover:  normalize has outline : 0; */
+a:hover {
+  background-color: white;
+}
+
+/*** Use Flexboxes to aliign sections */
+
+.head-container {
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  flex-wrap:         wrap;
+  -webkit-justify-content: center;
+  justify-content:         center;
+  -webkit-justify-content: space-between;
+  justify-content:         space-between;
+  -webkit-align-items: stretch;
+  align-items:         stretch;
+  -webkit-align-content: space-between;
+  align-content:         space-between;
+  -webkit-flex-grow: 1;
+  flex-grow:         1;
+}
+
+.flex-container {
+  display: -webkit-flex;
+  display: flex;
+  background-color: #99ccff;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap:         nowrap;
+  -webkit-justify-content: center;
+  justify-content:         center;
+  -webkit-justify-content: space-between;
+  justify-content:         space-between;
+  -webkit-align-items: stretch;
+  align-items:         stretch;
+  padding:0px;
+}
+
+.flex-item {
+  background-color: #99ccff;
+  -webkit-flex-grow: 1;
+  flex-grow:         1;
+  flex: 33%;
+  margin:10px;
+}
+
+
+#flex-item-wide {
+  flex: 60%;
+}
+#flex-item-narrow {
+  flex: 40%;
+}
+
+.news-blog-signup {
+  background-color: #B7B9BC;
+}
+
+img {
+  border: 1px dotted black;
+  margin: 0px 10px 10px 0px;
+  float: left;
+  /*width:400px;*/
+  max-width:100%;
+}
+
+/* limit sizes of certain images */
+.small-pic {
+  /*float: left;*/
+  /*border: 1px dotted black;
+  margin: 0px 10px 10px 0px;*/
+  width:128px;
+}
+.large-pic {
+  /*float: left;*/
+  /*border: 1px dotted black;*/
+  /*margin: 0px 10px 10px 0px;*/
+  /*width:700px;*/
+}
+
+p.light {
+    font-weight: lighter;
+    font-size: smaller;
+}

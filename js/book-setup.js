@@ -13,8 +13,186 @@ var library = function(){};
 
 library.prototype.myBookArray = [];
 
-library.prototype.logArray = [];   // NOTE:  set up a log of events
+library.prototype.logArray = [];   // set up a log of events
 library.prototype.reportLog = false;  // can turn console log events from logMessage on and off
+
+library.prototype.init = function(){
+  this.$submitBtn = $("button.submit");
+  this.$addForm = $("button.add-forms");
+  this.$formWrapper = $("div.forms");
+
+  this.$addBooks = $("button.add-books");             //NOTE:  NEW
+  this.$addRow = $("button.add-row");                  //NOTE:  NEW
+  this.$rowWrapper = $("div.form-group");               //NOTE:  NEW
+
+  this.$getAuthors = $("button.get-authors");          //NOTE:  NEW
+  this.$getRandomBook = $("button.get-random-book");     //NOTE:  NEW
+  this.$getRandomAuthorName = $("button.get-random-author-name");     //NOTE:  NEW
+  this.$removeBookByTitle = $("button.remove-book-by-title");     //NOTE:  NEW
+  this.$removeBookByAuthor = $("button.remove-book-by-author");     //NOTE:  NEW
+  this.$getBookByTitle = $("button.get-book-by-title");     //NOTE:  NEW
+  this.$getBooksByAuthor = $("button.get-books-by-author");     //NOTE:  NEW
+  this.$getBookInfo = $("button.get-book-info");     //NOTE:  NEW
+  this._bindEvents();
+};
+
+library.prototype._bindEvents = function(){
+    this.$submitBtn.on("click", $.proxy(this._handleEvent, this));
+    this.$addForm.on("click", $.proxy(this._addForm, this));
+
+    this.$addBooks.on("click", $.proxy(this._handleRows, this));      //NOTE:  NEW
+    this.$addRow.on("click", $.proxy(this._addRow, this));       //NOTE:  NEW
+
+    this.$getAuthors.on("click", $.proxy(this._getAuthors, this));     //NOTE:  NEW
+    this.$getRandomBook.on("click", $.proxy(this._getRandomBook, this));     //NOTE:  NEW
+    this.$getRandomAuthorName.on("click", $.proxy(this._getRandomAuthorName, this));     //NOTE:  NEW
+    this.$removeBookByTitle.on("click", $.proxy(this._removeBookByTitle, this));     //NOTE:  NEW
+    this.$removeBookByAuthor.on("click", $.proxy(this._removeBookByAuthor, this));     //NOTE:  NEW
+    this.$getBookByTitle.on("click", $.proxy(this._getBookByTitle, this));     //NOTE:  NEW
+    this.$getBooksByAuthor.on("click", $.proxy(this._getBooksByAuthor, this));     //NOTE:  NEW
+    this.$getBookInfo.on("click", $.proxy(this._getBookInfo, this));     //NOTE:  NEW
+};
+
+library.prototype._getAuthors = function(){     //NOTE:  NEW
+  var myAuthArray = this.getAuthors();
+  console.log(myAuthArray);
+};
+
+library.prototype._getRandomBook = function(){     //NOTE:  NEW
+  var myBookElement = this.getRandomBook();
+  console.log(myBookElement);
+};
+
+library.prototype._getRandomAuthorName = function(){     //NOTE:  NEW
+  var myAuthor = this.getRandomAuthorName();
+  console.log(myAuthor);
+};
+
+library.prototype._removeBookByTitle = function(){     //NOTE:  NEW
+  var myTitle = document.getElementById("rbbt").value;
+  // console.log(myTitle);
+  var removed = this.removeBookByTitle(myTitle);
+  console.log("Input: "+myTitle, removed);
+};
+library.prototype._removeBookByAuthor = function(){     //NOTE:  NEW
+  var myAuthor = document.getElementById("rbba").value;
+  // console.log(myAuthor);
+  var removed = this.removeBookByAuthor(myAuthor);
+  console.log("Input: "+myAuthor, removed);
+};
+library.prototype._getBookByTitle = function(){     //NOTE:  NEW
+  var myTitle = document.getElementById("gbbt").value;
+  // console.log(myTitle);
+  var myBookArray = this.getBookByTitle(myTitle);
+  console.log("Input: "+myTitle, myBookArray);
+};
+library.prototype._getBooksByAuthor = function(){     //NOTE:  NEW
+  var myAuthor = document.getElementById("gbba").value;
+  // console.log(myAuthor);
+  var myBookArray = this.getBooksByAuthor(myAuthor);
+  console.log("Input: "+myAuthor, myBookArray);
+};
+library.prototype._getBookInfo = function(){     //NOTE:  NEW
+  var mySearch = document.getElementById("gbi").value;
+  // console.log(mySearch);
+  var myBookArray = this.getBookInfo(mySearch);
+  console.log("Input: "+mySearch, myBookArray);
+};
+
+
+
+library.prototype._handleEvent = function(){
+  $.each($("form"), function(index, value){
+    var first = $(this).children(".first-name").val();
+    var last = $(this).children(".last-name").val();
+    if(first && last) {
+      $("ul#jtlib").append("<li>" + first + " " + last + "</li>");
+    }
+  });
+};
+
+library.prototype._addForm = function(){
+  this.$formWrapper.append(this._formHTML);
+};
+
+library.prototype._formHTML = function(){
+  return '<br /><p>Form: ' + ($("form").length + 1) + '</p><form>'+
+    'First name: <input type="text" class="first-name"><br>' +
+    'Last name: <input type="text" class="last-name"><br>' +
+  '</form>';
+};
+
+library.prototype._handleRows = function(){                         //NOTE:  NEW
+  console.log("_handleRows");
+  $.each($("form"), function(index, value){
+    var bkTitle = $(this).children(".title").val();
+    var bkAuthor = $(this).children(".author").val();
+    var bkPgCnt = $(this).children(".pgCount").val();
+    var bkDate = $(this).children(".publishDt").val();
+    console.log(bkTitle, bkAuthor, bkPgCnt, bkDate);
+    if(bkTitle && bkAuthor && bkPgCnt && bkDate) {
+      // $("ul#jumbo-tron").append("<li>" + first + " " + last + "</li>");
+      $("ul#jtlib").append("<li>" + bkTitle + " " + bkAuthor + " " + bkPgCnt + " " + bkDate + "</li>");
+    }
+  });
+};
+
+library.prototype._addRow = function(){                          //NOTE:  NEW
+  this.$rowWrapper.append(this._rowHTML);
+};
+
+library.prototype._rowHTML = function(){                          //NOTE:  NEW
+  console.log('<br /><form>' +
+    '<div class="col-xs-4">' +
+      '<input class="form-control" id="title" type="text" placeholder="Book Title">' +
+    '</div>' +
+    '<div class="col-xs-4">' +
+      '<input class="form-control" id="author" type="text" placeholder="Author">' +
+    '</div>' +
+    '<div class="col-xs-2">' +
+      '<input class="form-control" id="pgCount" type="text" placeholder="Page Count">' +
+    '</div>' +
+    '<div class="col-xs-2">' +
+      '<input class="form-control" id="publishDt" type="text" placeholder="Publish Date">' +
+    '</div>' +
+  '</form>');
+  // return '<br /><form>' +
+  //   '<div class="col-xs-4">' +
+  //     '<input class="form-control" id="title" type="text" placeholder="Book Title">' +
+  //   '</div>' +
+  //   '<div class="col-xs-4">' +
+  //     '<input class="form-control" id="author" type="text" placeholder="Author">' +
+  //   '</div>' +
+  //   '<div class="col-xs-2">' +
+  //     '<input class="form-control" id="pgCount" type="text" placeholder="Page Count">' +
+  //   '</div>' +
+  //   '<div class="col-xs-2">' +
+  //     '<input class="form-control" id="publishDt" type="text" placeholder="Publish Date">' +
+  // '</div></form>' ;
+
+  return '<br /><form>' +
+    '<div class="col-xs-4">' +
+      '<input class="form-control" id="title" type="text" placeholder="Book Title">' +
+    '</div>' +
+    '<div class="col-xs-4">' +
+      '<input class="form-control" id="author" type="text" placeholder="Author">' +
+    '</div>' +
+    '<div class="col-xs-2">' +
+      '<input class="form-control" id="pgCount" type="text" placeholder="Page Count">' +
+    '</div>' +
+    '<div class="col-xs-2">' +
+      '<input class="form-control" id="publishDt" type="text" placeholder="Publish Date">' +
+    '</div>' +
+  '</form>' ;
+
+
+
+
+
+
+};
+
+
 
 
 //******************************************** Log messages to array
@@ -190,20 +368,22 @@ library.prototype.getRandomBook = function(){
 //******************************************** get list of books by title
 library.prototype.getBookByTitle = function(queryString){
   var titleArray = [];
-  var resultsCount = 0;
-  var pos = 0;
-  for (var i=0; i<this.myBookArray.length; i++) {
-    pos = this.myBookArray[i].title.toLowerCase().indexOf(queryString.toLowerCase());
-    if (pos >= 0) {
-      titleArray[resultsCount] = this.myBookArray[i];
-      resultsCount++;
+  if (queryString.length) {
+    var resultsCount = 0;
+    var pos = 0;
+    for (var i=0; i<this.myBookArray.length; i++) {
+      pos = this.myBookArray[i].title.toLowerCase().indexOf(queryString.toLowerCase());
+      if (pos >= 0) {
+        titleArray[resultsCount] = this.myBookArray[i];
+        resultsCount++;
+      };
     };
-  };
-  if (resultsCount>0) {
-    this.logMessage(eval('"getBookByTitle: "+resultsCount+" matches found for "+queryString'));
-  }
-  else {
-    this.logMessage(eval('"getBookByTitle: ***ERROR*** No matches found for "+queryString'));
+    if (resultsCount>0) {
+      this.logMessage(eval('"getBookByTitle: "+resultsCount+" matches found for "+queryString'));
+    }
+    else {
+      this.logMessage(eval('"getBookByTitle: ***ERROR*** No matches found for "+queryString'));
+    };
   };
   return titleArray;
 };
@@ -211,20 +391,22 @@ library.prototype.getBookByTitle = function(queryString){
 //******************************************** get list of books by author
 library.prototype.getBooksByAuthor = function(queryString){
   var authorArray = [];
-  var resultsCount = 0;
-  var pos = 0;
-  for (var i=0; i<this.myBookArray.length; i++) {
+  if (queryString.length) {
+    var resultsCount = 0;
+    var pos = 0;
+    for (var i=0; i<this.myBookArray.length; i++) {
       pos = this.myBookArray[i].author.toLowerCase().indexOf(queryString.toLowerCase());
-    if (pos >= 0) {
-      authorArray[resultsCount] = this.myBookArray[i];
-      resultsCount++;
+      if (pos >= 0) {
+        authorArray[resultsCount] = this.myBookArray[i];
+        resultsCount++;
+      };
     };
-  };
-  if (resultsCount>0) {
-    this.logMessage(eval('"getBooksByAuthor: "+resultsCount+" matches found for "+queryString'));
-  }
-  else {
-    this.logMessage(eval('"getBooksByAuthor: ***ERROR*** No matches found for "+queryString'));
+    if (resultsCount>0) {
+      this.logMessage(eval('"getBooksByAuthor: "+resultsCount+" matches found for "+queryString'));
+    }
+    else {
+      this.logMessage(eval('"getBooksByAuthor: ***ERROR*** No matches found for "+queryString'));
+    };
   };
   return authorArray;
 };
@@ -364,6 +546,7 @@ library.prototype.clearStorage = function() {
 
 //  put instances at bottom per Eric
 var gLibrary = new library();   // global library
+gLibrary.init();
 
 //******************************************** TEST cases
 
@@ -422,7 +605,7 @@ gLibrary.reportLog = false; // toggle message logging to console
 //===>  to see results:  this.bookArray for array; result for count
 //
 gLibrary.reportLog = false; // toggle message logging to console
-// var result = gLibrary.addBooks(tempBookArray);
+var result = gLibrary.addBooks(tempBookArray);
 // console.log(result);
 
 

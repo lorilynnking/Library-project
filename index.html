@@ -1,22 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <title>Library Project</title>
   <meta charset="utf-8">
-  <title>test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link type="text/css" rel="stylesheet" href="css/normalize.css" />
   <link type="text/css" rel="stylesheet" href="css/library-style.css" />
+
 </head>
-
 <body>
-  <h1>Techtonic library project</h1>
-  <div id='lib-project'>
+
+    <h5>List of Names</h5>
+    <ul id="jumbo-tron"></ul>
+    <br />
+    <div class="forms">
+      <p>Form 1</p>
+      <form>
+        First name: <input type="text" class="first-name"><br>
+        Last name: <input type="text" class="last-name"><br>
+      </form>
+    </div>
+    <br />
+    <button class="submit">submit</button>
+    <button class="add-forms">add new form</button>
 
 
 
+
+<h1>Library Project</h1>
+<section>
+  <div class="flex-container">
+  <div class="flex-item" id="flex-item-wide">
+      <h4>Library Contents</h4>
+      <div class="jumbotron" id="jt-library">
+        <ul id="jtlib">
+              <li>1</li>
+              <li>2</li>
+            </ul>
+      </div>
+    </div>
+    <div class="flex-item" id="flex-item-narrow">
+      <h4>Query Results</h4>
+      <div class="jumbotron" id="jt-results">
+        <p>text inside jumbotron </p>
+      </div>
+    </div>
   </div>
 
+  <div class="flex-container">
+    <div class="flex-item">
+      <h4>Add book(s) to library:</h4>
+      <div class="form-group row"> <!-- single book info -->
+        <form>
+          <div class="col-xs-4">
+            <input class="form-control" id="title" type="text" placeholder="Book Title">
+          </div>
+          <div class="col-xs-4">
+            <input class="form-control" id="author" type="text" placeholder="Author">
+          </div>
+          <div class="col-xs-2">
+            <input class="form-control" id="pgCount" type="text" placeholder="Page Count">
+          </div>
+          <div class="col-xs-2">
+            <input class="form-control" id="publishDt" type="text" placeholder="Publish Date">
+          </div>
+        </form>
+      </div>   <!-- single book info -->
+
+      <div class="flex-container align=right">  <!-- add more rows and add book(s) -->
+        <div class="flex-item">
+          <button class="btn btn-primary add-row" type="button">Click to add more rows</button>
+        </div>
+        <div class="flex-item" align=right>
+          <button class="btn btn-primary add-books" type="button">Add book(s)</button>
+        </div>
+      </div>  <!-- add more rows and add book(s) -->
+
+  </div>
+</div>
+</section>
+  <p> </p>
+
+  <div class="flex-container">
+    <div class="flex-item">
+      <h4>Queries by Title:</h4>
+
+      <div class="flex-item input-group">
+        <!-- <input type="text" class="form-control" placeholder="Title Search" id="s1"> -->
+        <input type="text" class="form-control" placeholder="Title Search" id="gbbt">
+        <span class="input-group-btn">
+          <button class="btn btn-primary get-book-by-title" type="button">Search</button>
+        </span>
+      </div>
+
+      <div class="flex-item input-group">
+        <input type="text" class="form-control" placeholder="Remove book by title" id="rbbt">
+        <span class="input-group-btn">
+          <button class="btn btn-primary remove-book-by-title" type="button">Remove</button>
+        </span>
+      </div>
+
+      <div class="flex-item" align=right>
+        <button class="btn btn-primary get-random-book" type="button">Get random book</button>
+      </div>
 
 
+    </div>
+
+    <div class="flex-item">
+      <h4>Queries by Author:</h4>
+
+      <div class="flex-item input-group">
+        <input type="text" class="form-control" placeholder="Author Search" id="gbba">
+        <span class="input-group-btn">
+          <button class="btn btn-primary get-books-by-author" type="button">Search</button>
+        </span>
+      </div>
+
+      <div class="flex-item input-group">
+        <input type="text" class="form-control" placeholder="Remove books by author" id="rbba">
+        <span class="input-group-btn">
+          <button class="btn btn-primary remove-book-by-author" type="button">Remove</button>
+        </span>
+      </div>
+
+      <div class="flex-item" align=right>
+        <button class="btn btn-primary get-random-author-name" type="button">Get random author</button>
+      </div>
+
+    </div>
+
+    <div class="flex-item">
+      <h4>Miscellaneous Queries:</h4>
+
+      <div class="flex-item input-group">
+        <input type="text" class="form-control" placeholder="Search for..." id="gbi">
+        <span class="input-group-btn">
+          <button class="btn btn-primary get-book-info" type="button">Search</button>
+        </span>
+      </div>
+
+      <div class="flex-item" align=right>
+        <button class="btn btn-primary get-authors" type="button">Get author list</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/book-setup.js"></script>
 </body>
 </html>
