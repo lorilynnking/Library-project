@@ -47,6 +47,11 @@ a:hover {
 .jumbotron {
     padding-top: 10px;
     padding-bottom: 10px;
+    margin-bottom: 0px;
+    height: 150px;
+    /*overflow: scroll;*/
+    overflow-x: hidden; overflow-y: auto
+    /*white-space: nowrap;*/
 }
 
 

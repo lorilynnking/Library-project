@@ -15,13 +15,9 @@ library.prototype.logArray = [];   // set up a log of events
 library.prototype.reportLog = false;  // can turn console log events from logMessage on and off
 
 library.prototype.init = function(){
-  this.$form = $("form");
-  this.$formWrapper = $("div.forms");
-
   this.$addBooks = $("button.add-books");
   this.$addRow = $("button.add-row");
   this.$rowWrapper = $("div.form-group");
-
   this.$getAuthors = $("button.get-authors");
   this.$getRandomBook = $("button.get-random-book");
   this.$getRandomAuthorName = $("button.get-random-author-name");
@@ -49,46 +45,57 @@ library.prototype._bindEvents = function(){
 // **************** put current library book list in left jubmotron ************
 library.prototype._currentState = function(){
   $('#jtlib > li').remove();
-  // var tempDate = '';                                           // NOTE:  toLocaleDateString testing
   for (var i=0; i<this.myBookArray.length; i++){
+    // if (dateType = string) {
+      // this.myBookArray[i].publishDt = Date(this.myBookArray[i].publishDt);
+      // console.log(this.myBookArray[i].publishDt.toLocaleDateString());
+        // var dateType = (typeof this.myBookArray[i].publishDt);
+        // console.log(dateType);
+        this.myBookArray[i].publishDt = new Date(this.myBookArray[i].publishDt);
+        // dateType = (typeof this.myBookArray[i].publishDt);
+        // console.log(dateType);
+    // };
     $("ul#jtlib").append("<li>" + this.myBookArray[i].title +
       " (" + this.myBookArray[i].author + ") " +
       this.myBookArray[i].pgCount + " pages, publish date: " +
       this.myBookArray[i].publishDt.toLocaleDateString() + "</li>");
-
-      // tempDate = this.myBookArray[i].publishDt;                // NOTE:  testing to figure out whye
-      // console.log(i,tempDate, tempDate.toLocaleDateString());  // NOTE:  toLocaleDateString breaks
-                                                                  // NOTE:  after running libGet()
   };
 };
 
 // **************** add a book array element's data to right jumbotron**********
 library.prototype._appendBookData = function(bookElement) {
-  $("ul#jtres").append("<li>" + bookElement.title +
-      " (" + bookElement.author + ") " +
-      bookElement.pgCount + " pages, publish date: " +
-      bookElement.publishDt.toLocaleDateString() + "</li>");
+  if(bookElement) {
+    var bkString = "<li>" + bookElement.title +
+        " (" + bookElement.author + ") " +
+        bookElement.pgCount + " pages, publish date: " +
+        bookElement.publishDt.toLocaleDateString();
+    if (bookElement.other) { bkString = bkString + " (Comments: " + bookElement.other +")</li>"; }
+    else                   { bkString = bkString + "</li>"; };
+    $("ul#jtres").append(bkString);
+  };
 };
-
-
 
 // **************** add more rows so multiple books can be added ***************
 library.prototype._addRow = function(){
   this.$rowWrapper.append(this._rowHTML);
 };
+
 library.prototype._rowHTML = function(){
-  return '<br /><form class="newrow another">' +
-  '<div class="col-xs-4">' +
-    '<input class="form-control" id="title" type="text" placeholder="Book Title">' +
+  return '<form class="newrow another">' +
+  '<div class="col-xs-3">' +
+  '  <input class="form-control" id="title" type="text" placeholder="Book Title">' +
   '</div>' +
-  '<div class="col-xs-4">' +
-    '<input class="form-control" id="author" type="text" placeholder="Author">' +
-  '</div>' +
-  '<div class="col-xs-2">' +
-    '<input class="form-control" id="pgCount" type="number" placeholder="Page Count">' +
+  '<div class="col-xs-3">' +
+  '  <input class="form-control" id="author" type="text" placeholder="Author">' +
   '</div>' +
   '<div class="col-xs-2">' +
-    '<input class="form-control" id="publishDt" type="date">' +
+  '  <input class="form-control" id="pgCount" type="number" placeholder="Page Count">' +
+  '</div>' +
+  '<div class="col-xs-2">' +
+  '  <input class="form-control" id="publishDt" type="date" placeholder="mm/dd/yyyy">' +
+  '</div>' +
+  '<div class="col-xs-2">' +
+  '  <input class="form-control" id="other" type="text" placeholder="Comments">' +
   '</div>' +
   '</form>' ;
 };
@@ -103,8 +110,9 @@ library.prototype._handleRows = function(){
     var bkAuthor = $(this).find("#author").val();
     var bkPgCnt = $(this).find("#pgCount").val();
     var bkDate = $(this).find("#publishDt").val();
+    var bkOther = $(this).find("#other").val();    // this one is optional
     if(bkTitle && bkAuthor && bkPgCnt && bkDate) {
-      var book = new newBook(bkTitle, bkAuthor, bkPgCnt, bkDate);    // NOTE:  add "other" field
+      var book = new newBook(bkTitle, bkAuthor, bkPgCnt, bkDate, bkOther);
       aIndex++;
       tempArray[aIndex] = book;
     };
@@ -118,17 +126,14 @@ library.prototype._handleRows = function(){
 library.prototype._addBooks = function(bookArray){
   var addCount = this.addBooks(bookArray);
   $('#jtres > li').remove();
-  $("ul#jtres").append("<li align=center><strong>" + addCount + " books added to library</strong></li>");
+  $("ul#jtres").append("<li align=center><strong>" + addCount + " book(s) added to library</strong></li>");
 };
-
 
 library.prototype._getAuthors = function(){
   var myAuthArray = this.getAuthors();
   $('#jtres > li').remove();
   $("ul#jtres").append("<li align=center><strong>" + myAuthArray.length + " distinct authors returned</strong></li>");
-  for (var i=0;i<myAuthArray.length;i++) {
-    $("ul#jtres").append("<li>" + myAuthArray[i] + " </li>");
-  };
+  for (var i=0;i<myAuthArray.length;i++) {  $("ul#jtres").append("<li>" + myAuthArray[i] + " </li>");  };
 };
 
 library.prototype._getRandomBook = function(){
@@ -142,27 +147,31 @@ library.prototype._getRandomAuthorName = function(){
   var myAuthor = this.getRandomAuthorName();
   $('#jtres > li').remove();
   $("ul#jtres").append("<li align=center><strong>Random author result:</strong></li>");
-  $("ul#jtres").append("<li>" + myAuthor + " </li>");
+  if (myAuthor) {   $("ul#jtres").append("<li>" + myAuthor + " </li>");  };
 };
 
 library.prototype._removeBookByTitle = function(){
   _self = this;
   var myTitle = document.getElementById("rbbt").value;
+  var remStatus = "";
   var removed = _self.removeBookByTitle(myTitle);
+  if (!removed) {remStatus = " NOT";}
   $('#jtres > li').remove();
-  $("ul#jtres").append("<li align=center><strong>Book(s) '" + myTitle + "' removed from library</strong></li>");
+  $("ul#jtres").append("<li align=center><strong>Book(s) '" + myTitle + "'" + remStatus +" removed from library</strong></li>");
   _self._currentState();
-  $(".b-srch")[0].reset();
+  $(".b-srch")[0].reset();   // reset input box
 };
 
 library.prototype._removeBookByAuthor = function(){
   _self = this;
   var myAuthor = document.getElementById("rbba").value;
+  var remStatus = "";
   var removed = _self.removeBookByAuthor(myAuthor);
+  if (!removed) {remStatus = " NOT";}
   $('#jtres > li').remove();
-  $("ul#jtres").append("<li align=center><strong>Book(s) by author '" + myAuthor + "' removed from library</strong></li>");
+  $("ul#jtres").append("<li align=center><strong>Book(s) by author '" + myAuthor + "'" + remStatus + " removed from library</strong></li>");
   _self._currentState();
-  $(".a-srch")[0].reset();
+  $(".a-srch")[0].reset();   // reset input box
 };
 
 library.prototype._getBookByTitle = function(){
@@ -170,10 +179,8 @@ library.prototype._getBookByTitle = function(){
   var myBookArray = this.getBookByTitle(myTitle);
   $('#jtres > li').remove();
   $("ul#jtres").append("<li align=center><strong>Book names containing '" + myTitle + "':</strong></li>");
-  for (var i=0;i<myBookArray.length;i++) {
-    this._appendBookData(myBookArray[i]);
-  };
-  $(".b-srch")[0].reset();
+  for (var i=0;i<myBookArray.length;i++) { this._appendBookData(myBookArray[i]);  };
+  $(".b-srch")[0].reset();   // reset input box
 };
 
 library.prototype._getBooksByAuthor = function(){
@@ -181,21 +188,17 @@ library.prototype._getBooksByAuthor = function(){
   var myBookArray = this.getBooksByAuthor(myAuthor);
   $('#jtres > li').remove();
   $("ul#jtres").append("<li align=center><strong>Book(s) by author name containing '" + myAuthor + "':</strong></li>");
-  for (var i=0;i<myBookArray.length;i++) {
-    this._appendBookData(myBookArray[i]);
-  };
-  $(".a-srch")[0].reset();
+  for (var i=0;i<myBookArray.length;i++) { this._appendBookData(myBookArray[i]);  };
+  $(".a-srch")[0].reset();   // reset input box
 };
 
 library.prototype._getBookInfo = function(){
   var mySearch = document.getElementById("gbi").value;
   var myBookArray = this.getBookInfo(mySearch);
   $('#jtres > li').remove();
-  $("ul#jtres").append("<li align=center><strong>Library search for '" + mySearch + ":</strong></li>");
-  for (var i=0;i<myBookArray.length;i++) {
-    this._appendBookData(myBookArray[i]);
-  };
-  $(".m-srch")[0].reset();
+  $("ul#jtres").append("<li align=center><strong>Library search for '" + mySearch + "':</strong></li>");
+  for (var i=0;i<myBookArray.length;i++) { this._appendBookData(myBookArray[i]);  };
+  $(".m-srch")[0].reset();   // reset input box
 };
 
 //******************************* END OF jQuery additions ******************************
@@ -206,14 +209,8 @@ library.prototype.addBooks = function(inputBookArray){
   if (typeof(inputBookArray) != "undefined" && inputBookArray.length >> 0) {
     var inputArrayLen = inputBookArray.length;
     for (var i = 0; (i < inputArrayLen); i++){
-      if (this.addBook(inputBookArray[i])) {
-        addCount++;
-      };
+      if (this.addBook(inputBookArray[i])) { addCount++; };
     };
-    this.logMessage(eval('"addBooks: "+addCount+" books added"'));
-  }
-  else {
-    this.logMessage(eval('"addBooks: ***WARNING*** No book array specified"'));
   };
   return addCount;
 };
@@ -221,39 +218,26 @@ library.prototype.addBooks = function(inputBookArray){
 //******************************************** Add book to array
 library.prototype.addBook = function(myBook){
   var isNewBook = true;
-  // increment through existing books and check for duplicates
   var bookArrayLen = this.myBookArray.length;
-  if (typeof(myBook) != "undefined") {
-    if (bookArrayLen > 0) {    // we have existing books; perform search
-      for(var i = 0; (i < bookArrayLen && isNewBook); i++){
+      for(var i = 0; (i < bookArrayLen && isNewBook); i++) {
         if ((this.myBookArray[i].title == myBook.title)
         && (this.myBookArray[i].author == myBook.author)) {   // not a new book
           this.logMessage(eval('"addBook: ***ERROR*** Book already exists: "+myBook.title+" ("+myBook.author+")"'));
           isNewBook = false;
         };
       };
-    };
     if (isNewBook) {
-      if (this.validBookInfo(myBook)) {
-        this.myBookArray.push(myBook);
-        this.logMessage(eval('"addBook: Book added!  "+ myBook.title+" ("+myBook.author+")"'));      //  add to array
-      }
+      if (this.validBookInfo(myBook)) {  this.myBookArray.push(myBook);  }
       else {
         this.logMessage(eval('"addBook: ***ERROR*** Book not valid: "+ myBook.title+" ("+myBook.author+")"'));
         isNewBook = false;
       };
     };
-  }
-  else {
-    this.logMessage(eval('"addBook: ***WARNING*** No book specified"'));
-    isNewBook = false;
-  };
   return isNewBook;
 };
 
 //******************************************** Validate inputs prior to adding to array
 library.prototype.validBookInfo = function(myBook){
-  // NOTE:  Use form validation when working with inputs from presentation layer  https://www.w3schools.com/js/js_validation_api.asp
   var goodInput = true;
   this.logMessage(eval('"validBookInfo: "+myBook.title+"   "+myBook.author+"   "+myBook.pgCount+"   "+myBook.publishDt'));
       //--------------------------------------------------
@@ -272,7 +256,7 @@ library.prototype.validBookInfo = function(myBook){
     goodInput = false;
   };
     //--------------------------------------------------
-  if (typeof(myBook.pgCount) != "number" && typeof(myBook.pgCount) != "string") {  // NOTE:  fix this for test case book14 (returns NaN)     ***** FIX THIS
+  if (typeof(myBook.pgCount) != "number" && typeof(myBook.pgCount) != "string") {
     goodInput = false;
     this.logMessage(eval('"validBookInfo: ***ERROR*** Incorrect datatype: Page Count = "+ myBook.pgCount'));
   }
@@ -319,7 +303,6 @@ library.prototype.removeBookByTitle = function(myTitle){
   var removalCount = 0;
   var bookMaxIndex = this.myBookArray.length-1;
   var booksRemoved = false;
-  if (typeof(myTitle) != "undefined" && myTitle.length >> 0) {
     for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
       if (myTitle.toLowerCase() == this.myBookArray[i].title.toLowerCase()) {
         this.myBookArray.splice(i, 1);  // take it out and shift the other elements
@@ -327,16 +310,6 @@ library.prototype.removeBookByTitle = function(myTitle){
         booksRemoved = true;
       };
     };
-    if (booksRemoved)  {
-      this.logMessage(eval('"removeBookByTitle: "+removalCount +"  Books removed: "+myTitle'));
-    }
-    else {
-      this.logMessage(eval('"removeBookByTitle: ***WARNING*** Book not found: "+myTitle'));
-    };
-  }
-  else {
-    this.logMessage(eval('"removeBookByAuthor: ***WARNING*** No book specified"'));
-  };
   return booksRemoved;
 };
 
@@ -345,7 +318,6 @@ library.prototype.removeBookByAuthor = function(myAuthor){
   var removalCount = 0;
   var bookMaxIndex = this.myBookArray.length-1;
   var booksRemoved = false;
-  if (typeof(myAuthor) != "undefined" && myAuthor.length >> 0) {
     for (var i=bookMaxIndex; i>-1; i--) {  // move backwards through array so we don't have to adjust the index of the one to be deleted
       if (myAuthor.toLowerCase() == this.myBookArray[i].author.toLowerCase()) {
         this.myBookArray.splice(i, 1);  // take it out and shift the other elements
@@ -353,31 +325,16 @@ library.prototype.removeBookByAuthor = function(myAuthor){
         booksRemoved = true;
       };
     };
-    if (booksRemoved)  {
-        this.logMessage(eval('"removeBookByAuthor: "+removalCount +" Books by "+myAuthor+" removed"'));
-    }
-    else {
-        this.logMessage(eval('"removeBookByAuthor: ***WARNING*** Books by "+myAuthor+" not found"'));
-    };
-  }
-  else {
-  this.logMessage(eval('"removeBookByAuthor: ***WARNING*** No author specified"'));
-  };
   return booksRemoved;
 };
 
 //********************************************  Get random book
 library.prototype.getRandomBook = function(){
-  var bookArrayLen = this.myBookArray.length;    // get size of current array
-  if (bookArrayLen > 0) {
-    var randomIndex = Math.round(Math.random()*(bookArrayLen-1));
-      this.logMessage(eval('"GetRandomBook: "+randomIndex, this.myBookArray[randomIndex].title'));
+  if (this.myBookArray.length) {
+    var randomIndex = Math.round(Math.random()*(this.myBookArray.length-1));
     return this.myBookArray[randomIndex];
-  }
-  else {
-      this.logMessage(eval('"GetRandomBook: ***WARNING*** No books!"'));
-    return null;
   };
+  return null;
 };
 
 //******************************************** get list of books by title
@@ -392,12 +349,6 @@ library.prototype.getBookByTitle = function(queryString){
         titleArray[resultsCount] = this.myBookArray[i];
         resultsCount++;
       };
-    };
-    if (resultsCount>0) {
-      this.logMessage(eval('"getBookByTitle: "+resultsCount+" matches found for "+queryString'));
-    }
-    else {
-      this.logMessage(eval('"getBookByTitle: ***ERROR*** No matches found for "+queryString'));
     };
   };
   return titleArray;
@@ -416,12 +367,6 @@ library.prototype.getBooksByAuthor = function(queryString){
         resultsCount++;
       };
     };
-    if (resultsCount>0) {
-      this.logMessage(eval('"getBooksByAuthor: "+resultsCount+" matches found for "+queryString'));
-    }
-    else {
-      this.logMessage(eval('"getBooksByAuthor: ***ERROR*** No matches found for "+queryString'));
-    };
   };
   return authorArray;
 };
@@ -429,35 +374,26 @@ library.prototype.getBooksByAuthor = function(queryString){
 //******************************************** get list of authors
 library.prototype.getAuthors = function(){
   var authorArray = [];
-  var bookArrayLen = this.myBookArray.length;
   var authorArraySize = 0;
   var lookForAuthor;
-  for (var i = 0; (i < bookArrayLen); i++){
-    //** look for current book's author in the author array
-    //   first time through, author array is empty so -1 will be result
+  for (var i = 0; (i < this.myBookArray.length); i++){
     lookForAuthor = authorArray.indexOf(this.myBookArray[i].author);
     if (lookForAuthor==-1) {
         authorArray[authorArraySize] = this.myBookArray[i].author;
         authorArraySize++;
     };
   };
-  this.logMessage(eval('"getAuthors: "+authorArraySize+" distinct authors: ", authorArray'));
   return authorArray;
 };
 
 //******************************************** Get random author
 library.prototype.getRandomAuthorName = function(){
   var authArray = this.getAuthors();
-  var authArrayLen = authArray.length;    // get size of current array
-  if (authArrayLen > 0) {
-    var randomIndex = Math.round(Math.random()*(authArrayLen-1));
-    this.logMessage(eval('"getRandomAuthorName: "+randomIndex+" "+authArray[randomIndex]'));
+  if (authArray.length) {
+    var randomIndex = Math.round(Math.random()*(authArray.length-1));
     return authArray[randomIndex];
-  }
-  else {
-    this.logMessage(eval('"GetRandomBook: ***WARNING*** No authors!"'));
-    return null;
   };
+  return null;
 };
 
 //**************** BONUS CONTENT ********************************************
@@ -481,29 +417,17 @@ library.prototype.getBookInfo = function(queryString){
         resultsCount++;
       };
     };
-    if (resultsCount>0) {
-      this.logMessage(eval('"getBookInfo: "+resultsCount+" matches found for "+queryString'));
-    }
-    else {
-      this.logMessage(eval('"getBookInfo: ***ERROR*** No matches found for "+queryString'));
-    };
-  }
-  else {
-  this.logMessage(eval('"getBookInfo: ***WARNING*** search info specified"'));
   };
   return searchArray;
 };
 
 //******************************************** Store current myBookArray content in localStorage
 library.prototype.libStore = function() {
-  this.logMessage(eval('"libStore:  Checking for local storage support: typeof(Storage)="+typeof(Storage)'));
   if(typeof(Storage) !== "undefined") {
     localStorage.storedArray = JSON.stringify(this.myBookArray);
-    this.logMessage(eval('"libStore:  array stored."'));
+    this.logMessage(eval('"libStore:  Library stored."'));
   }
-  else {
-    this.logMessage(eval('"libStore:  Sorry, your browser does not support web storage..."'));
-  };
+  else { this.logMessage(eval('"libStore:  Sorry, your browser does not support web storage..."')); };
   return;
 };
 
@@ -512,34 +436,22 @@ library.prototype.libGet = function() {
   if(typeof(Storage) !== "undefined") {
     if (typeof(localStorage.storedArray) !== "undefined") {
       this.myBookArray = JSON.parse(localStorage.storedArray);
-      this.logMessage(eval('"libGet:  array retrieved."'));
-    }
-    else {
-      this.logMessage(eval('"libGet:  array was not preveiously stored; therefore current contents were not replaced"'));
+      this.logMessage(eval('"libGet:  Library retrieved."'));
     };
   }
-  else {
-        this.logMessage(eval('"libGet:  Sorry, your browser does not support web storage..."'));
-  };
+  else { this.logMessage(eval('"libGet:  Sorry, your browser does not support web storage..."')); };
   return;
 };
 
 //******************************************** Clear out localStorage
 library.prototype.clearStorage = function() {
-  if (typeof(localStorage.storedArray) !== "undefined") {
-    localStorage.removeItem("storedArray");
-    this.logMessage(eval('"clearStorage:  Storage cleared."'));
-  }
-  else {
-    this.logMessage(eval('"clearStorage:  array was not preveiously stored"'));
-  };
+  if (typeof(localStorage.storedArray) !== "undefined") { localStorage.removeItem("storedArray"); };
   return;
 };
 
 //******************************************** Log messages to array
 library.prototype.logMessage = function(message){
-  if (this.reportLog == true) { console.log(message);
-  };
+  if (this.reportLog == true) { console.log(message); };
   this.logArray[this.logArray.length] = message;
   return;
 };
@@ -570,7 +482,7 @@ var book8 = new newBook( "Teresa's Guide","Robert Ludlum", 256, 1981);
 var book9 = new newBook( "My Guide","Teresa Adams Creech", 256, 1981);
 
 //******************************************** Add an array of books
-gLibrary.reportLog = false; // toggle message logging to console
-var result = gLibrary.addBooks(tempBookArray);
-// gLibrary.libGet();   // NOTE:  somehow this breaks the localedate function in the _currentState routine
+// var result = gLibrary.addBooks(tempBookArray);
+// gLibrary.reportLog = true; //   NOTE: toggle message logging to console
+gLibrary.libGet();   // NOTE:  somehow this breaks the localedate function in the _currentState routine
 gLibrary._currentState();
