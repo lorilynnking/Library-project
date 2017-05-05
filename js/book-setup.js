@@ -26,6 +26,7 @@ library.prototype.init = function(){
   this.$getBookByTitle = $("button.get-book-by-title");
   this.$getBooksByAuthor = $("button.get-books-by-author");
   this.$getBookInfo = $("button.get-book-info");
+  this.$libStore = $("button.svlib");
   this._bindEvents();
 };
 
@@ -40,6 +41,7 @@ library.prototype._bindEvents = function(){
     this.$getBookByTitle.on("click", $.proxy(this._getBookByTitle, this));
     this.$getBooksByAuthor.on("click", $.proxy(this._getBooksByAuthor, this));
     this.$getBookInfo.on("click", $.proxy(this._getBookInfo, this));
+    this.$libStore.on("click", $.proxy(this._libStore, this));
 };
 
 // **************** put current library book list in left jubmotron ************
@@ -190,6 +192,14 @@ library.prototype._getBookInfo = function(){
   $("ul#jtres").append("<li align=center><strong>Library search for '" + mySearch + "':</strong></li>");
   for (var i=0;i<myBookArray.length;i++) { this._appendBookData(myBookArray[i]);  };
   $(".m-srch")[0].reset();   // reset input box
+};
+
+library.prototype._libStore = function(){
+  var remStatus = "";
+  var stored = this.libStore();
+  if (!stored) {remStatus = " NOT";}
+    $('#jtres > li').remove();
+    $("ul#jtres").append("<li align=center><strong>Library" + remStatus + " saved to local storage.</strong></li>");
 };
 
 //******************************* END OF jQuery additions ******************************
@@ -414,12 +424,14 @@ library.prototype.getBookInfo = function(queryString){
 
 //******************************************** Store current myBookArray content in localStorage
 library.prototype.libStore = function() {
+  var result = false;
   if(typeof(Storage) !== "undefined") {
     localStorage.storedArray = JSON.stringify(this.myBookArray);
     this.logMessage(eval('"libStore:  Library stored."'));
+    result = true;
   }
   else { this.logMessage(eval('"libStore:  Sorry, your browser does not support web storage..."')); };
-  return;
+  return result;
 };
 
 //******************************************** Retrieve previously stored myBookArray content from localStorage
@@ -454,29 +466,5 @@ library.prototype.logMessage = function(message){
 var gLibrary = new library();
 gLibrary.init();
 
-//******************************************** TEST cases
-var book1 = new newBook( "The White Dragon","Anne McCaffrey", 365, 1978, "Loaned to Teresa 6/15/2016");
-var book2 = new newBook( "The Bourne Identity","Robert Ludlum", 256, 1981);
-var book3 = new newBook( "The Lincoln Lawyer","Michael Connolly", 315, 2005, "5 stars!");
-var book4 = new newBook( "Seven Databases in Seven Weeks","Eric Redmond and Jim R. Wilson", 212, 2013, "Regis MSCD664");
-var book5 = new newBook( "The Masterharper of Pern","Anne McCaffrey", 212, 1998);
-var book6 = new newBook( "The Bourne Identity","Different Author", 256, 1981);   // test duplicate book
-var book7 = new newBook( "The Bourne Identity","Robert Ludlum", 256, 1981);   // test duplicate book
-
-var tempBookArray = [];
-tempBookArray[0] = book1;
-tempBookArray[1] = book2;
-tempBookArray[2] = book3;
-tempBookArray[3] = book4;
-tempBookArray[4] = book5;
-tempBookArray[5] = book6;
-tempBookArray[6] = book7;
-
-var book8 = new newBook( "Teresa's Guide","Robert Ludlum", 256, 1981);
-var book9 = new newBook( "My Guide","Teresa Adams Creech", 256, 1981);
-
-//******************************************** Add an array of books
-// var result = gLibrary.addBooks(tempBookArray);
-// gLibrary.reportLog = true; //   NOTE: toggle message logging to console
-gLibrary.libGet();   // NOTE:  somehow this breaks the localedate function in the _currentState routine
+gLibrary.libGet();
 gLibrary._currentState();
