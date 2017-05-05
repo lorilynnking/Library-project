@@ -46,15 +46,6 @@ library.prototype._bindEvents = function(){
 library.prototype._currentState = function(){
   $('#jtlib > li').remove();
   for (var i=0; i<this.myBookArray.length; i++){
-    // if (dateType = string) {
-      // this.myBookArray[i].publishDt = Date(this.myBookArray[i].publishDt);
-      // console.log(this.myBookArray[i].publishDt.toLocaleDateString());
-        // var dateType = (typeof this.myBookArray[i].publishDt);
-        // console.log(dateType);
-        this.myBookArray[i].publishDt = new Date(this.myBookArray[i].publishDt);
-        // dateType = (typeof this.myBookArray[i].publishDt);
-        // console.log(dateType);
-    // };
     $("ul#jtlib").append("<li>" + this.myBookArray[i].title +
       " (" + this.myBookArray[i].author + ") " +
       this.myBookArray[i].pgCount + " pages, publish date: " +
@@ -436,6 +427,9 @@ library.prototype.libGet = function() {
   if(typeof(Storage) !== "undefined") {
     if (typeof(localStorage.storedArray) !== "undefined") {
       this.myBookArray = JSON.parse(localStorage.storedArray);
+      for (var i=0;i<this.myBookArray.length;i++) {
+        this.myBookArray[i].publishDt = new Date(this.myBookArray[i].publishDt);
+      };
       this.logMessage(eval('"libGet:  Library retrieved."'));
     };
   }
